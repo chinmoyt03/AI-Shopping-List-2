@@ -1,19 +1,34 @@
 <template>
   <div id="app">
-    <h1>Voice to Text</h1>
+    <h1>AI Shopping List</h1>
     <button @click="startRecording" :disabled="isRecording">Start Recording</button>
     <button @click="stopRecording" :disabled="!isRecording">Stop Recording</button>
     <button @click="uploadFile" :disabled="!audioBlob">Generate Text</button>
+    <button @click="fetchShoppingList">Show Shopping List</button>
     <div v-if="response">
-      <h2>Generated text from the audio</h2>
+      <h2></h2>
       <p>{{ response.text }}</p>
       <h2>Shopping Items List</h2>
-      <ul>
-        <li v-for="item in response.items" :key="item.item">
-          {{ item.item }}: {{ item.quantity }}
-        </li>
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in response.items" :key="item.item">
+            <td>{{ item.item }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <br><br><br> <br><br><br> <br><br><br> <br><br><br> <br><br><br>
+    <h4>Project by Chinmoy Talukdar</h4>
+
   </div>
 </template>
 
@@ -69,6 +84,18 @@ export default {
         alert('Failed to upload file.');
       }
     },
+    async fetchShoppingList() {
+  try {
+    const res = await axios.get('http://127.0.0.1:5000/shopping-list');
+    this.response = {
+      //text: 'Shopping List Fetched from Database',
+      items: res.data.shopping_list,
+    };
+  } catch (error) {
+    console.error('Error fetching shopping list:', error);
+    alert('Failed to fetch shopping list.');
+  }
+},
   },
 };
 </script>
@@ -93,5 +120,17 @@ button:disabled {
 }
 button:hover:not(:disabled) {
   background-color: #333;
+}
+table {
+  width: 50%;
+  margin: 20px auto;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+th {
+  background-color: #f2f2f2;
 }
 </style>
