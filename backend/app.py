@@ -68,7 +68,7 @@ def extract_items_from_text(text):
     
     # Split the text at the word "and" and extract items from each segment
     segments = text.split(" and ")
-    pattern = re.compile(r'(\d+)\s*(kg|g|lbs|oz|liters|ml|units)\s*(\S+(?:\s+\S+)*)')  # Matches quantities, units, and nouns
+    pattern = re.compile(r'(\d+)\s*(kg|g|l|lbs|oz|liters|ml|units)\s*(\S+(?:\s+\S+)*)')  # Matches quantities, units, and nouns
     
     for segment in segments:
         matches = re.findall(pattern, segment)
@@ -90,6 +90,7 @@ def save_items_to_db(items):
 
             if existing_item:
                 # If the item exists, update the quantity
+                # new_quantity = item['quantity']
                 new_quantity = existing_item[2] + item['quantity']
                 cur.execute("UPDATE shopping_items SET quantity = %s WHERE id = %s", (new_quantity, existing_item[0]))
             else:
@@ -106,20 +107,6 @@ def save_items_to_db(items):
     finally:
         cur.close()
 
-def delete_item():
-    try:
-        data = request.json
-        item_id = data.get('id')
-        if not item_id:
-            return jsonify({"error": "Invalid request, missing item ID"}), 400
-
-        cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM shopping_items WHERE id = %s", (item_id,))
-        mysql.connection.commit()
-        cur.close()
-        return jsonify({"message": "Item deleted successfully"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/shopping-list', methods=['GET'])
 def get_shopping_list():
