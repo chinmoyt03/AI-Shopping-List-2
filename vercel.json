@@ -1,11 +1,23 @@
 {
-
-  "version":2,
-  "builds":{
-    {"src": "backend/app.py", "use": "@vercel/python"}
+  "version": 2,
+  "builds": [
+    { "src": "src/package.json", "use": "@vercel/static-build" },
+    { "src": "backend/**/*", "use": "@now/python" }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/$1"
+    }
+  ],
+  "env": {
+    "MYSQL_HOST": "localhost",
+    "MYSQL_USER": "root",
+    "MYSQL_PASSWORD": "1122",
+    "MYSQL_DATABASE": "shopping_list"
   }
-
-    "routes": [
-      { "src": "/(.*)", "dest": "app.py" }
-    ]
-  }
+}
